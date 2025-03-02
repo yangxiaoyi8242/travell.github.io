@@ -89,12 +89,17 @@ const openSetupWizard = () => {
         
         <el-menu-item index="/expense-approval">
           <el-icon><Check /></el-icon>
-          <template #title>费用审批</template>
+          <template #title>申请审核</template>
+        </el-menu-item>
+        
+        <el-menu-item index="/travel-reimbursement">
+          <el-icon><Tickets /></el-icon>
+          <template #title>提交报销</template>
         </el-menu-item>
         
         <el-menu-item index="/reimbursement">
           <el-icon><Tickets /></el-icon>
-          <template #title>报销管理</template>
+          <template #title>审核支付</template>
         </el-menu-item>
         
         <el-menu-item index="/budget-management">

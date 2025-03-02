@@ -33,17 +33,15 @@ const loading = ref(false)
 const rememberMe = ref(false)
 
 // 登录方法
-const handleLogin = async () => {
+const handleLogin = () => {
   if (!loginFormRef.value) return
   
-  await loginFormRef.value.validate((valid) => {
+  loginFormRef.value.validate((valid) => {
     if (valid) {
       loading.value = true
       
       // 模拟登录请求
       setTimeout(() => {
-        // 这里应该是实际的登录API调用
-        // 为了演示，我们使用模拟数据
         if (loginForm.username === 'admin' && loginForm.password === '123456') {
           // 登录成功，存储登录状态
           localStorage.setItem('isLoggedIn', 'true')
@@ -53,6 +51,7 @@ const handleLogin = async () => {
           }))
           
           ElMessage.success('登录成功')
+          // 路由跳转
           router.push('/')
         } else {
           ElMessage.error('用户名或密码错误')
@@ -60,6 +59,8 @@ const handleLogin = async () => {
         loading.value = false
       }, 1000)
     }
+  }).catch(error => {
+    console.error('登录验证出错:', error)
   })
 }
 </script>
@@ -100,20 +101,18 @@ const handleLogin = async () => {
         </el-form-item>
         
         <div class="form-options">
-          <el-checkbox v-model="rememberMe">记住我</el-checkbox>
-          <el-link type="primary" :underline="false">忘记密码?</el-link>
+          <el-checkbox v-model="rememberMe">记住密码</el-checkbox>
+          <el-link type="primary">忘记密码？</el-link>
         </div>
         
-        <el-form-item>
-          <el-button 
-            type="primary" 
-            :loading="loading" 
-            class="login-button" 
-            @click="handleLogin"
-          >
-            登录
-          </el-button>
-        </el-form-item>
+        <el-button
+          type="primary"
+          class="login-button"
+          :loading="loading"
+          @click="handleLogin"
+        >
+          登录
+        </el-button>
       </el-form>
     </div>
   </div>
@@ -124,38 +123,37 @@ const handleLogin = async () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
   background-color: #f5f7fa;
-  background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
 }
 
 .login-box {
-  width: 500px;
-  padding: 50px;
-  background: #fff;
+  width: 400px;
+  padding: 40px;
+  background: white;
   border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  max-width: 90%;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
 .login-header {
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 30px;
 }
 
 .login-header h2 {
-  font-size: 28px;
+  margin: 0;
   color: #303133;
-  margin-bottom: 15px;
+  font-size: 24px;
 }
 
 .login-header p {
-  font-size: 16px;
+  margin: 10px 0 0;
   color: #909399;
+  font-size: 14px;
 }
 
 .login-form {
-  margin-top: 30px;
+  margin-top: 20px;
 }
 
 .form-options {
@@ -166,21 +164,7 @@ const handleLogin = async () => {
 }
 
 .login-button {
-  width: 150px;
-  padding: 12px 0;
-  font-size: 16px;
-  margin: 0 auto;
-  display: block;
-}
-
-.el-input {
-  width: 80%;
-  margin: 0 auto;
-}
-
-.el-form-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  width: 100%;
+  padding: 12px 20px;
 }
 </style>

@@ -9,6 +9,10 @@ const routes = [
   },
   {
     path: '/',
+    redirect: '/home'
+  },
+  {
+    path: '/home',
     name: 'Home',
     component: () => import('../views/Home.vue'),
     meta: { title: '首页' }
@@ -24,6 +28,12 @@ const routes = [
     name: 'ExpenseApproval',
     component: () => import('../views/ExpenseApproval.vue'),
     meta: { title: '费用审批' }
+  },
+  {
+    path: '/travel-reimbursement',
+    name: 'TravelReimbursement',
+    component: () => import('../views/TravelReimbursement.vue'),
+    meta: { title: '出差报销' }
   },
   {
     path: '/reimbursement',
@@ -76,7 +86,7 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory('/travell/'),
   routes
 })
 
