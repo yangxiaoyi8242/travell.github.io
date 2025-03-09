@@ -18,7 +18,7 @@ import {
 const router = useRouter()
 const route = useRoute()
 
-const isCollapse = ref(false)
+const isCollapse = ref(true) // 默认收起
 
 const handleSelect = (key) => {
   router.push(key)
@@ -56,7 +56,11 @@ const openSetupWizard = () => {
 
 <template>
   <el-container class="layout-container">
-    <el-aside width="auto">
+    <el-aside width="auto" 
+      @mouseenter="isCollapse = false" 
+      @mouseleave="isCollapse = true"
+      class="aside-container"
+    >
       <el-menu
         :default-active="getActiveMenu()"
         class="el-menu-vertical"
@@ -72,24 +76,50 @@ const openSetupWizard = () => {
           <el-icon v-else class="logo-icon" :size="24" color="#fff"><Money /></el-icon>
         </div>
         
-        <el-menu-item index="/setup" @click.stop.prevent="openSetupWizard">
-          <el-icon><Guide /></el-icon>
-          <template #title>配置向导</template>
-        </el-menu-item>
-
         <el-menu-item index="/">
           <el-icon><HomeFilled /></el-icon>
           <template #title>首页</template>
         </el-menu-item>
-        
+
+        <el-sub-menu index="/system-config">
+          <template #title>
+            <el-icon><Setting /></el-icon>
+            <span>系统配置</span>
+          </template>
+          <el-menu-item index="/system-config/user-management">
+            <el-icon><Setting /></el-icon>
+            <span>企业信息</span>
+          </el-menu-item>
+          <el-menu-item index="/budget-management">
+            <el-icon><Lock /></el-icon>
+            <span>预算管理</span>
+          </el-menu-item>
+          <el-menu-item index="/document-management">
+            <el-icon><Document /></el-icon>
+            <span>单据管理</span>
+          </el-menu-item>
+          <el-menu-item index="/workflow-management">
+            <el-icon><Connection /></el-icon>
+            <span>流程管理</span>
+          </el-menu-item>
+          <el-menu-item index="/difference-standard-management">
+            <el-icon><Guide /></el-icon>
+            <span>差标管理</span>
+          </el-menu-item>
+          <el-menu-item index="/risk-control-management">
+            <el-icon><Warning /></el-icon>
+            <span>风险管理</span>
+          </el-menu-item>
+        </el-sub-menu>
+
         <el-menu-item index="/expense-application">
           <el-icon><Document /></el-icon>
           <template #title>费用申请</template>
         </el-menu-item>
         
-        <el-menu-item index="/expense-approval">
+        <el-menu-item index="/approval-management">
           <el-icon><Check /></el-icon>
-          <template #title>申请审核</template>
+          <template #title>审批管理</template>
         </el-menu-item>
         
         <el-menu-item index="/travel-reimbursement">
@@ -97,58 +127,23 @@ const openSetupWizard = () => {
           <template #title>提交报销</template>
         </el-menu-item>
         
-        <el-menu-item index="/reimbursement">
-          <el-icon><Tickets /></el-icon>
-          <template #title>审核支付</template>
-        </el-menu-item>
-        
-        <el-menu-item index="/budget-management">
-          <el-icon><Money /></el-icon>
-          <template #title>预算管理</template>
-        </el-menu-item>
         
         <el-menu-item index="/expense-statistics">
           <el-icon><TrendCharts /></el-icon>
           <template #title>费用统计</template>
-        </el-menu-item>
-        
-        <el-menu-item index="/document-management">
-          <el-icon><Document /></el-icon>
-          <template #title>单据管理</template>
-        </el-menu-item>
-        
-        <el-menu-item index="/workflow-management">
-          <el-icon><Connection /></el-icon>
-          <template #title>流程管理</template>
-        </el-menu-item>
-        
-        <el-menu-item index="/difference-standard-management">
-          <el-icon><Document /></el-icon>
-          <template #title>差标管理</template>
-        </el-menu-item>
-        
-        <el-menu-item index="/risk-control-management">
-          <el-icon><Warning /></el-icon>
-          <template #title>风险控制</template>
-        </el-menu-item>
+        </el-menu-item>   
         
         <el-menu-item index="/contract-payment">
           <el-icon><Document /></el-icon>
           <template #title>合同付款</template>
         </el-menu-item>
+
       </el-menu>
     </el-aside>
     
     <el-container>
       <el-header>
         <div class="header-left">
-          <el-icon 
-            class="collapse-btn" 
-            @click="isCollapse = !isCollapse"
-            :size="20"
-          >
-            <component :is="isCollapse ? 'Expand' : 'Fold'" />
-          </el-icon>
           <h2 class="page-title">{{ route.meta.title || '企业费控系统' }}</h2>
         </div>
         <div class="header-right">
@@ -192,6 +187,11 @@ const openSetupWizard = () => {
   overflow: hidden;
 }
 
+.aside-container {
+  position: relative;
+  z-index: 1000;
+}
+
 .el-menu-vertical:not(.el-menu--collapse) {
   width: 200px;
 }
@@ -232,7 +232,7 @@ const openSetupWizard = () => {
 
 .collapse-btn {
   cursor: pointer;
-  margin-right: 15px;
+  margin-right: 20px;
 }
 
 .page-title {

@@ -8,6 +8,8 @@ const formData = reactive({
   applicantName: '',
   department: '',
   applicationId: '', // 关联的出差申请单ID
+  contractId: '', // 关联的合同ID
+  paymentPlanId: '', // 关联的付款计划ID
   expenseType: '差旅费',
   amount: 0,
   startDate: '',
@@ -24,7 +26,8 @@ const rules = {
   applicantName: [{ required: true, message: '请输入申请人姓名', trigger: 'blur' }],
   department: [{ required: true, message: '请选择所属部门', trigger: 'blur' }],
   amount: [{ required: true, message: '请输入报销金额', trigger: 'blur' }],
-  applicationId: [{ required: false, message: '请选择关联的出差申请单', trigger: 'change' }]
+  applicationId: [{ required: false, message: '请选择关联的出差申请单', trigger: 'change' }],
+  contractId: [{ required: false, message: '请选择关联的合同', trigger: 'change' }]
 }
 
 // 部门选项
@@ -123,6 +126,53 @@ const invoiceDialogVisible = ref(false)
 // 选择的发票
 const selectedInvoices = ref([])
 
+// 合同列表数据
+const contracts = ref([
+  {
+    id: 'CT20230001',
+    title: '软件开发合同A',
+    customer: '上海某科技有限公司',
+    amount: 100000,
+    paymentPlans: [
+      {
+        id: 'PP20230001',
+        phase: '项目启动',
+        amount: 30000,
+        planDate: '2023-07-15',
+        status: 'pending'
+      },
+      {
+        id: 'PP20230002',
+        phase: '中期交付',
+        amount: 40000,
+        planDate: '2023-08-15',
+        status: 'pending'
+      }
+    ]
+  },
+  {
+    id: 'CT20230002',
+    title: '技术服务合同B',
+    customer: '北京某信息技术有限公司',
+    amount: 80000,
+    paymentPlans: [
+      {
+        id: 'PP20230003',
+        phase: '服务启动',
+        amount: 40000,
+        planDate: '2023-07-20',
+        status: 'pending'
+      }
+    ]
+  }
+])
+
+// 选择合同对话框
+const contractDialogVisible = ref(false)
+
+// 当前选中的合同
+const currentContract = ref(null)
+
 // 初始化数据
 onMounted(() => {
   // 这里可以添加获取数据的逻辑
@@ -149,6 +199,25 @@ const selectApplication = (application) => {
 const openInvoiceDialog = () => {
   invoiceDialogVisible.value = true
   selectedInvoices.value = [...formData.invoices]
+}
+
+// 打开选择合同对话框
+const openContractDialog = () => {
+  contractDialogVisible.value = true
+}
+
+// 选择合同和付款计划
+const selectContractAndPlan = (contract, plan) => {
+  formData.contractId = contract.id
+  formData.paymentPlanId = plan.id
+  
+  // 根据合同和付款计划填充表单数据
+  formData.amount = plan.amount
+  formData.purpose = `合同「${contract.title}」的${plan.phase}付款`
+  
+  contractDialogVisible.value = false
+  
+  ElMessage.success(`已关联合同：${contract.title} - ${plan.phase}`)
 }
 
 // 选择/取消选择发票
@@ -323,6 +392,7 @@ const resetForm = () => {
               class="application-input"
             />
             <el-button type="primary" @click="openApplicationDialog">选择申请单</el-button>
+            <el-button type="success" @click="openContractDialog">选择付款合同</el-button>
           </div>
         </el-form-item>
         
@@ -543,6 +613,64 @@ const resetForm = () => {
         </span>
       </template>
     </el-dialog>
+    
+    <!-- 选择合同对话框 -->
+    <el-dialog
+      v-model="contractDialogVisible"
+      title="选择关联的付款合同"
+      width="800px"
+    >
+      <div v-for="contract in contracts" :key="contract.id" class="contract-item">
+        <el-card class="contract-card">
+          <template #header>
+            <div class="contract-header">
+              <h3>{{ contract.title }}</h3>
+              <span>合同编号: {{ contract.id }}</span>
+            </div>
+          </template>
+          
+          <div class="contract-info">
+            <p><strong>客户:</strong> {{ contract.customer }}</p>
+            <p><strong>合同金额:</strong> ¥ {{ contract.amount.toLocaleString() }}</p>
+          </div>
+          
+          <el-divider content-position="center">付款计划</el-divider>
+          
+          <el-table :data="contract.paymentPlans" style="width: 100%" border>
+            <el-table-column prop="phase" label="阶段" width="150" />
+            <el-table-column prop="amount" label="金额" width="120">
+              <template #default="scope">
+                <span>¥ {{ scope.row.amount.toLocaleString() }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="planDate" label="计划日期" width="120" />
+            <el-table-column prop="status" label="状态" width="100">
+              <template #default="scope">
+                <el-tag type="warning" v-if="scope.row.status === 'pending'">待付款</el-tag>
+                <el-tag type="success" v-else-if="scope.row.status === 'paid'">已付款</el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" width="120">
+              <template #default="scope">
+                <el-button 
+                  type="primary" 
+                  size="small"
+                  @click="selectContractAndPlan(contract, scope.row)"
+                >
+                  选择
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-card>
+      </div>
+      
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="contractDialogVisible = false">取消</el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -593,5 +721,29 @@ const resetForm = () => {
 .form-buttons {
   margin-top: 20px;
   text-align: center;
+}
+
+.contract-item {
+  margin-bottom: 20px;
+}
+
+.contract-card {
+  margin-bottom: 15px;
+}
+
+.contract-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.contract-header h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #303133;
+}
+
+.contract-info {
+  margin-bottom: 15px;
 }
 </style>

@@ -2,6 +2,38 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
   {
+    path: '/approval-management',
+    name: 'ApprovalManagement',
+    component: () => import('../views/ApprovalManagement.vue'),
+    meta: { title: '审批管理' }
+  },
+  {
+    path: '/system-config',
+    name: 'SystemConfig',
+    component: () => import('../views/SystemConfig.vue'),
+    meta: { title: '系统配置' },
+    children: [
+      {
+        path: 'user-management',
+        name: 'UserManagement',
+        component: () => import('../views/EmployeeManagement.vue'),
+        meta: { title: '人员管理' }
+      },
+      {
+        path: 'role-permission',
+        name: 'RolePermission',
+        component: () => import('../views/RolePermission.vue'),
+        meta: { title: '角色权限' }
+      },
+      {
+        path: 'department-management',
+        name: 'DepartmentManagement',
+        component: () => import('../views/DepartmentManagement.vue'),
+        meta: { title: '部门管理' }
+      }
+    ]
+  },
+  {
     path: '/login',
     name: 'Login',
     component: () => import('../views/Login.vue'),
@@ -24,22 +56,10 @@ const routes = [
     meta: { title: '费用申请' }
   },
   {
-    path: '/expense-approval',
-    name: 'ExpenseApproval',
-    component: () => import('../views/ExpenseApproval.vue'),
-    meta: { title: '费用审批' }
-  },
-  {
     path: '/travel-reimbursement',
     name: 'TravelReimbursement',
     component: () => import('../views/TravelReimbursement.vue'),
     meta: { title: '出差报销' }
-  },
-  {
-    path: '/reimbursement',
-    name: 'Reimbursement',
-    component: () => import('../views/Reimbursement.vue'),
-    meta: { title: '报销管理' }
   },
   {
     path: '/budget-management',

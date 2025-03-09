@@ -103,10 +103,10 @@ const processSteps = ref([
     subModules: []
   },
   {
-    title: '申请审核',
-    desc: '审批待处理的费用申请',
+    title: '审核管理',
+    desc: '管理费用和报销审批',
     icon: Check,
-    path: '/expense-approval',
+    path: '/approval-management',
     color: '#67C23A',
     hasSubModules: false,
     subModules: []
@@ -119,31 +119,6 @@ const processSteps = ref([
     color: '#FF9800',
     hasSubModules: false,
     subModules: []
-  },
-  {
-    title: '审核支付',
-    desc: '管理报销单据和流程',
-    icon: Tickets,
-    path: '/reimbursement',
-    color: '#E6A23C',
-    hasSubModules: true,
-    expanded: false,
-    subModules: [
-      {
-        title: '报销审核',
-        desc: '审核报销单据和支付',
-        icon: Tickets,
-        path: '/reimbursement',
-        color: '#E6A23C'
-      },
-      {
-        title: '付款合同',
-        desc: '管理合同付款和计划',
-        icon: Document,
-        path: '/contract-payment',
-        color: '#FF9800'
-      }
-    ]
   },
   {
     title: '费用统计',
@@ -179,6 +154,12 @@ const visibleSubModules = computed(() => {
       <el-col :span="24" class="header-actions">
         <h1 class="welcome-title">欢迎使用企业费控系统</h1>
         <p class="welcome-subtitle">高效管理企业费用，助力业务发展</p>
+        <!-- 配置向导按钮 -->
+        <div class="setup-wizard-button">
+          <el-button type="primary" @click="openSetupWizard" :icon="Setting" round>
+            系统配置向导
+          </el-button>
+        </div>
       </el-col>
     </el-row>
 
@@ -243,6 +224,14 @@ const visibleSubModules = computed(() => {
   padding: 20px;
   max-width: 1400px;
   margin: 0 auto;
+  position: relative;
+}
+
+.setup-wizard-button {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  z-index: 10;
 }
 
 .welcome-title {

@@ -1,25 +1,16 @@
 <script setup>
-import { ref, reactive } from 'vue'
-import { ElMessage } from 'element-plus'
+import { ref, reactive, onMounted } from 'vue'
+import { ElMessage, ElLoading } from 'element-plus'
+import { useRouter } from 'vue-router'
+import ExpenseAPI from '../api/expense'
+
+const router = useRouter()
 
 // 费用类型选项
-const expenseTypes = [
-  { value: 'travel', label: '差旅费' },
-  { value: 'office', label: '办公用品' },
-  { value: 'entertainment', label: '业务招待费' },
-  { value: 'training', label: '培训费' },
-  { value: 'other', label: '其他费用' }
-]
+const expenseTypes = ref([])
 
 // 部门选项
-const departments = [
-  { value: 'sales', label: '销售部' },
-  { value: 'marketing', label: '市场部' },
-  { value: 'rd', label: '研发部' },
-  { value: 'finance', label: '财务部' },
-  { value: 'hr', label: '人力资源部' },
-  { value: 'admin', label: '行政部' }
-]
+const departments = ref([])
 
 // 表单数据
 const formData = reactive({
@@ -55,23 +46,33 @@ const loading = ref(false)
 const submitForm = async () => {
   if (!formRef.value) return
   
-  await formRef.value.validate((valid, fields) => {
+  await formRef.value.validate(async (valid, fields) => {
     if (valid) {
       loading.value = true
       
-      // 模拟提交数据到后端
-      setTimeout(() => {
-        loading.value = false
+      try {
+        // 通过API提交数据到后端
+        const response = await ExpenseAPI.createExpense(formData);
+        
         ElMessage({
           message: '费用申请提交成功！',
           type: 'success'
-        })
-        resetForm()
-      }, 1000)
+        });
+        resetForm();
+        router.push('/'); // 提交成功后跳转到首页
+      } catch (error) {
+        console.error('提交费用申请失败:', error);
+        ElMessage({
+          message: '提交失败，请稍后重试',
+          type: 'error'
+        });
+      } finally {
+        loading.value = false;
+      }
     } else {
-      console.log('表单验证失败', fields)
+      console.log('表单验证失败', fields);
     }
-  })
+  });
 }
 
 // 重置表单
